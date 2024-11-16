@@ -1,62 +1,20 @@
 //Chamada das dependencias
 require('dotenv').config()
 const express = require('express')
-const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-const app = express()
-
-//Configuração para resposta JSON
-app.use(express.json())
+const checkToken = require('../middlewares/auth');
 
 //Models
-const User = require('./models/User')
+const User = require('../models/User')
 
-// Rota publica
-app.get('/', (req, res) => {
-    res.status(200).json({msg: 'Bem vindo a nossa API!'})
-})
+//Rotas
+const router = express.Router();
 
-//Rota privada
-app.get("/user/:id", checkToken, async (req, res) =>{
-    const id = req.params.id
-
-    //Checar se usuário existe
-
-    const user = await User.findById(id, '-password')
-
-    if(!user){
-        return res.status(404).json({msg: 'Usuário não cadastrado!'})
-    }
-
-    res.status(200).json({user})
-})
-
-
-//Função para checar o token
-function checkToken(req, res, next){
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(" ")[1]
-
-    if(!token){
-        return res.status(401).json({msg:'Acesso negado!'})
-    }
-
-    try{
-        const secret = process.env.SECRET
-
-        jwt.verify(token, secret)
-
-        next()
-    }catch(err){
-        res.status(400).json({msg:"Token inválido"})
-    }
-}
-
-// Registro de usuário
-app.post('/auth/register', async(req, res) => {
-
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//Criação do usuário
+router.post('/register', async (req, res) => {
     const {name, email, password, confirmpassword} = req.body
 
     // Validações
@@ -102,8 +60,25 @@ app.post('/auth/register', async(req, res) => {
     }
 })
 
-//Login do usuário
-app.post("/auth/login", async (req, res) => {
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//ROTA PRIVADA
+router.get("/user/:id", checkToken, async (req, res) =>{
+    const id = req.params.id
+
+    //Checar se usuário existe
+
+    const user = await User.findById(id, '-password')
+
+    if(!user){
+        return res.status(404).json({msg: 'Usuário não cadastrado!'})
+    }
+
+    res.status(200).json({user})
+})
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//LOGIN DO USUARIO
+router.post("/login", async (req, res) => {
     const {email, password} = req.body
 
     //Validações
@@ -134,22 +109,11 @@ app.post("/auth/login", async (req, res) => {
             id: user._id,
         },secret,
     )
-    res.status(200).json({msg:"Login feito com sucesso!",token})
+    res.status(200).json({msg:'Login feito com sucesso!',token})
     }catch(err){
         console.log(err)
-        res.status(500).json({msg:"Ocorreu um erro, tente novamente"})
+        res.status(500).json({msg:'Ocorreu um erro, tente novamente'})
     }
 })
 
-
-//Credenciais e conexão do banco
-const dbUser = process.env.DB_USER
-const dbPass = process.env.DB_PASS
-
-mongoose
-    .connect(`mongodb+srv://${dbUser}:${dbPass}@cluster1.eguyk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1`)
-    .then(() => {
-        app.listen(3000)
-        console.log('Conectado ao MongoDB com sucesso!')
-    }).catch((err) => console.log(err))
-
+module.exports = app => app.use('/auth', router)
