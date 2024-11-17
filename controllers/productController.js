@@ -163,7 +163,7 @@ router.get('/:id', async (req, res) => {
 //////////////////////////////////////////////////////////////////////////////////
 // BUSCAR PRODUTOS POR CATEGORIA
 
-router.get('/by-category/:categoryName', checkToken, async (req, res) => {
+router.get('/by-category/:categoryName', async (req, res) => {
     const { categoryName } = req.params;
 
     try {
