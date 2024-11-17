@@ -66,9 +66,9 @@ Certifique-se de ter as seguintes ferramentas instaladas:
     DB_PASS= (sua_senha_do_banco)
     SECRET= (sua_chave_secreta)
 
-4. **Configure o arquivo dbConfig.js** No arquivo dbConfig.js faça alteração da variavel `uri`, para a sua própria string de conexação ao MongoDB Atlas, fazendo alteração do USUÁRIO e SENHA, para as variaveis dbUser e dbPass.
-   ```bash
-        const uri = `mongodb+srv://${dbUser}:${dbPass}@cluster1.eguyk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1`;
+4. **Configure o arquivo dbConfig.js:** No arquivo dbConfig.js faça alteração da variavel `uri`, para a sua própria string de conexação ao MongoDB Atlas, fazendo alteração do USUÁRIO e SENHA, para as variaveis dbUser e dbPass.
+      ```bash
+     const uri = `mongodb+srv://${dbUser}:${dbPass}@cluster1.eguyk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1`;
 
    
 6. **Inicie o servidor**
