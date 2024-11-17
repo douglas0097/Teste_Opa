@@ -62,9 +62,9 @@ Certifique-se de ter as seguintes ferramentas instaladas:
     npm install
 3. **Configure o arquivo .env:** Crie um arquivo .env na raiz do projeto com as seguintes variáveis:
     ```bash
-    PORT=3000
-    MONGO_URI=mongodb://localhost:27017/nome-do-seu-banco
-    SECRET=sua_chave_secreta
+    DB_USER= (seu_usuario_do_banco)
+    DB_PASS= (sua_senha_do_banco)
+    SECRET= (sua_chave_secreta)
 4. **Inicie o servidor**
     ```bash
     npm run start
