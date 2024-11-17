@@ -7,22 +7,23 @@ const router = express.Router()
 
 /////////////////////////////////////////////////////////////////////////////////////
 //CRIAR CATEGORIA
+
 router.post('/register', checkToken, async (req, res) =>{
     const{name, description} = req.body
 
-    //Validações
+    //Validar campos
     if(!name || !description){
         return res.status(422).json({msg:'Preencha todos os campos!'})
     }
 
-    //Adicionando categoria
+    //Criar categoria
     try{
         const category = new Category({
             name,
             description
         })
         await category.save()
-        res.status(201).json({msg:'Categoria adicionada com sucesso!'})
+        res.status(201).json({msg:'Categoria criada com sucesso!'})
     }catch(error){
         res.status(500).json({msg:'Erro ao adicionar a categoria'})
     }
@@ -31,9 +32,36 @@ router.post('/register', checkToken, async (req, res) =>{
 /////////////////////////////////////////////////////////////////////////////////////
 //EDITAR CATEGORIA
 
-router.put('/update/:id', checkToken, async (req, res) =>{
+router.put('/edit/:id', checkToken, async (req, res) =>{
     const {id} = req.params
-    const {name, description} = req.body;
+    const {name, description} = req.body
+
+    if(!name || !description){
+        return res.status(422).json({msg:'Preencha todos os campos!'})
+    }
+    
+    try{
+        const editCategory = await Category.findByIdAndUpdate(
+            id,
+            {name, description},
+            {new:true}
+        )
+        if (!editCategory){
+            return res.status(404).json({msg:'Categoria não encontrada!'})
+        }
+
+        res.status(200).json({msg:'Categoria editada com sucesso!'})
+    }catch(error){
+        res.status(500).json({msg:'Erro ao editar categoria!'})
+    }
+})
+
+/////////////////////////////////////////////////////////////////////////////////////
+//ATUALIZAR CATEGORIA
+
+router.patch('/update/:id', async (req, res) =>{
+    const {id} = req.params
+    const {name, description} = req.body
 
     try{
         const updateCategory = await Category.findByIdAndUpdate(
@@ -42,30 +70,14 @@ router.put('/update/:id', checkToken, async (req, res) =>{
             {new:true}
         )
         if (!updateCategory){
-            return res.status(404).json({msg:'Categoria não encontrada!'})
+            return res.status(404).json({msg:'Categoria não encontrada'})
         }
 
         res.status(200).json({msg:'Categoria atualizada com sucesso!'})
     }catch(error){
         res.status(500).json({msg:'Erro ao atualizar categoria!'})
     }
-})
-/////////////////////////////////////////////////////////////////////////////////////
-//DELETAR CATEGORIA
-router.delete('/delete/:id', checkToken, async (req, res) =>{
-    const {id} =  req.params;
 
-    try{
-        const deleteCategory = await Category.findByIdAndDelete(id)
-
-        if(!deleteCategory){
-            return res.status(404).json({msg:'Categoria não encontrada'})
-        }
-
-        res.status(200).json({msg: 'Categoria deletada com sucesso!'})
-    }catch(error){
-        res.status(500).json({msg: 'Erro ao deletar categoria'})
-    }
 })
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -79,6 +91,7 @@ router.get('/', async (req, res) => {
         res.status(500).json({msg:'Erro ao buscar categorias'})
     }
 })
+
 /////////////////////////////////////////////////////////////////////////////////////
 //BUSCAR CATEGORIA POR ID
 
@@ -99,5 +112,23 @@ router.get('/:id', async (req, res) =>{
     }
 })
 
+/////////////////////////////////////////////////////////////////////////////////////
+//DELETAR CATEGORIA
+
+router.delete('/delete/:id', checkToken, async (req, res) =>{
+    const {id} =  req.params
+
+    try{
+        const deleteCategory = await Category.findByIdAndDelete(id)
+
+        if(!deleteCategory){
+            return res.status(404).json({msg:'Categoria não encontrada'})
+        }
+
+        res.status(200).json({msg: 'Categoria deletada com sucesso!'})
+    }catch(error){
+        res.status(500).json({msg: 'Erro ao deletar categoria'})
+    }
+})
 
 module.exports = app => app.use('/categories', router)

@@ -1,49 +1,40 @@
-//Chamada das dependencias
 require('dotenv').config()
 const express = require('express')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-const checkToken = require('../middlewares/auth');
-
-//Models
 const User = require('../models/User')
 
-//Rotas
 const router = express.Router();
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//Criação do usuário
+//CRIAÇÃO DE USUÁRIO
+
 router.post('/register', async (req, res) => {
     const {name, email, password, confirmpassword} = req.body
 
-    // Validações
-    if(!name){
-        return res.status(422).json({msg: 'O nome é obrigatório!'})
+    // Validar campos
+    if(!name || !email || !password){
+        return res.status(422).json({msg: 'Preencha todos os campos!'})
     }
-    if(!email){
-        return res.status(422).json({msg: 'O email é obrigatório!'})
-    }
-    if(!password){
-        return res.status(422).json({msg: 'A senha é obrigatória!'})
-    }
-
+    
+    //Comfirmar senhas
     if(password !== confirmpassword){
         return res.status(422).json({msg: 'Senhas divergentes!'})
     }
 
-    // Checar de email ja foi cadastrado
+    // Validar se email ja foi cadastrado
     const userExists = await User.findOne({email: email})
 
     if(userExists){
         return res.status(422).json({msg: 'Email já cadastrado'})
     }
 
-    //Criação de senha com hash
+    //Criar senha com hash
     const salt = await bcrypt.genSalt(12)
     const passwordHash = await bcrypt.hash(password, salt)
 
-    //Criação de usuário
+    //Criar usuário
     const user = new User({
         name,
         email,
@@ -61,27 +52,11 @@ router.post('/register', async (req, res) => {
 })
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//ROTA PRIVADA
-router.get("/user/:id", checkToken, async (req, res) =>{
-    const id = req.params.id
-
-    //Checar se usuário existe
-
-    const user = await User.findById(id, '-password')
-
-    if(!user){
-        return res.status(404).json({msg: 'Usuário não cadastrado!'})
-    }
-
-    res.status(200).json({user})
-})
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
 //LOGIN DO USUARIO
 router.post("/login", async (req, res) => {
     const {email, password} = req.body
 
-    //Validações
+    //Validarcampos
     if(!email){
         return res.status(422).json({msg: 'O email é obrigatório!'})
     }
@@ -89,7 +64,7 @@ router.post("/login", async (req, res) => {
         return res.status(422).json({msg: 'A senha é obrigatória!'})
     }
 
-    //Checar de usuário existe
+    //Checar se usuário existe
     const user = await User.findOne({email: email})
 
     if(!user){
@@ -103,6 +78,7 @@ router.post("/login", async (req, res) => {
         return res.status(422).json({msg: 'Senha inválida!'})
     }
 
+    //Gerar token após login
     try{
         const secret = process.env.SECRET
         const token = jwt.sign({
