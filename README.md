@@ -33,7 +33,7 @@ Este projeto é uma API para gerenciar produtos, categorias e autenticação de 
 
 - [Node.js](https://nodejs.org/) Plataforma para executar JavaScript no servidor.
 - [Express.js](https://expressjs.com/) Framework para gerenciar rotas e criar APIs.
-- [MongoDB](https://www.mongodb.com/) Banco de dados NoSQL para armazenamento de dados.
+- [MongoDB(Atlas)]([https://www.mongodb.com/cloud)]Banco de dados NoSQL para armazenamento de dados.
 - [Mongoose](https://mongoosejs.com/) Biblioteca para interação com o MongoDB.
 - [JWT (Json Web Token)](https://jwt.io/)  Para autenticação baseada em tokens.
 - [Bcrypt](https://github.com/kelektiv/node.bcrypt.js) Para hashing de senhas.
@@ -46,7 +46,7 @@ Este projeto é uma API para gerenciar produtos, categorias e autenticação de 
 Certifique-se de ter as seguintes ferramentas instaladas:
 
 - **[Node.js](https://nodejs.org/)**
-- **[MongoDB](https://www.mongodb.com/try/download/community)**
+- **[MongoDB (Atlas)]((https://www.mongodb.com/cloud/atlas/register))**
 - Um cliente REST para testes, como **[Postman](https://www.postman.com/)** ou **[Insomnia](https://insomnia.rest/)**.
 
 ---
@@ -65,7 +65,13 @@ Certifique-se de ter as seguintes ferramentas instaladas:
     DB_USER= (seu_usuario_do_banco)
     DB_PASS= (sua_senha_do_banco)
     SECRET= (sua_chave_secreta)
-4. **Inicie o servidor**
+
+4. **Configure o arquivo dbConfig.js** No arquivo dbConfig.js faça alteração da variavel `uri`, para a sua própria string de conexação ao MongoDB Atlas, fazendo alteração do USUÁRIO e SENHA, para as variaveis dbUser e dbPass.
+   ```bash
+        const uri = `mongodb+srv://${dbUser}:${dbPass}@cluster1.eguyk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1`;
+
+   
+6. **Inicie o servidor**
     ```bash
     npm run start
 ---
